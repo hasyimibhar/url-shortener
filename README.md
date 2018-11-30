@@ -1,6 +1,41 @@
 ## Development
 
-### Using Docker
+### Locally
+
+1. Setup Postgres. The easiest way is to use Docker. The command below will start a detached Postgres container:
+
+    ```sh
+    $ docker run -it --rm -d \
+        -p 5432:5432 \
+        -v "$(pwd)/tmp/db:/var/lib/postgresql/data" \
+        postgres
+    ```
+
+2. Setup gems:
+
+    ```sh
+    $ bundle
+    ```
+
+3. Setup environment variables:
+
+    ```sh
+    $ cp .env.example .env
+    ```
+
+4. Create the databases:
+
+    ```sh
+    $ rake db:create
+    ```
+
+4. Start the app:
+
+    ```sh
+    $ bundle exec rails server
+    ```
+
+### Using Docker Compose
 
 1. Start the containers using Docker Compose:
 
