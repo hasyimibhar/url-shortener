@@ -4,7 +4,7 @@ class ShortUrlController < ApplicationController
     response = {
       link: {
         url: short_url.value,
-        short_url: short_url.short_url()
+        short_url: short_url.short_url(Rails.configuration.app_url)
       },
       errors: []
     }

@@ -1,6 +1,6 @@
 class ShortUrl < ApplicationRecord
-  def short_url()
-    "http://localhost:3000/" + self.short
+  def short_url(app_url)
+    app_url + '/' + self.short
   end
 
   def self.generate(url)
