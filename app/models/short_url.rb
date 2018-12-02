@@ -1,4 +1,6 @@
 class ShortUrl < ApplicationRecord
+  validates :value, http_url: true
+
   def short_url(app_url)
     app_url + '/' + self.short
   end
