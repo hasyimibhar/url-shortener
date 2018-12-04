@@ -1,3 +1,9 @@
+# URL Shortener
+
+[![CircleCI](https://circleci.com/gh/hasyimibhar/url-shortener/tree/master.svg?style=svg)](https://circleci.com/gh/hasyimibhar/url-shortener/tree/master)
+
+This is a working URL shortener which I made as an exercise to learn Ruby and also Rails.
+
 ## Development
 
 ### Locally
