@@ -8,7 +8,7 @@ class ShortUrl < ApplicationRecord
   def self.generate(url)
     short_url = self.new
     short_url.value = url
-    # TODO: don't hardcode the length
+    # TODO: don't hardcode the length of short url
     short_url.short = self.generate_random_string(6)
     
     return short_url

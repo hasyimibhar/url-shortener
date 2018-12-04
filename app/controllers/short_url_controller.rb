@@ -40,4 +40,13 @@ class ShortUrlController < ApplicationController
 
     render json: response, status: status
   end
+
+  def redirect
+    short_url = ShortUrl.find_by short: params[:short]
+    if short_url.nil?
+      render status: :not_found
+    else
+      render status: :found, location: short_url.value
+    end
+  end
 end
