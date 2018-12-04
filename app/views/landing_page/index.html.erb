@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>URL Shortener</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  
+    <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-align: center;
+      align-items: center;
+      padding-top: 40px;
+      padding-bottom: 40px;
+      background-color: #f5f5f5;
+    }
+
+    .form-url-shortener {
+      width: 100%;
+      max-width: 600px;
+      padding: 15px;
+      margin: auto;
+    }
+    .form-url-shortener .form-control {
+      position: relative;
+      box-sizing: border-box;
+      height: auto;
+      padding: 10px;
+      font-size: 16px;
+    }
+    .form-url-shortener .form-control:focus {
+      z-index: 2;
+    }
+    .form-url-shortener input[type="text"] {
+      margin-bottom: -1px;
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    </style>
+  </head>
+
+  <body class="text-center">
+    <form id="app" class="form-url-shortener" v-on:submit.prevent="onGenerate">
+      <h1 class="h3 mb-3 font-weight-normal">URL Shortener</h1>
+
+      <label for="inputUrl" class="sr-only">URL</label>
+      <div v-if="!shortUrl" class="input-group mb-3">
+        <input
+          type="text"
+          id="inputUrl"
+          class="form-control"
+          placeholder="https://www.google.com"
+          required="true"
+          autofocus="true"
+          autocomplete="off"
+          v-model="url"
+        />
+      </div>
+      <div v-if="shortUrl" class="input-group mb-3">
+        <input
+          id="shortUrl"
+          type="text"
+          class="form-control"
+          v-model="shortUrl"
+          disabled
+        />
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button" v-on:click.prevent="onCopy">
+            {{ copyText }}
+          </button>
+        </div>
+      </div>
+      <button
+        v-if="!shortUrl"
+        class="btn btn-lg btn-primary btn-block"
+        type="submit"
+        :disabled="isGenerating"
+      >
+        Generate
+      </button>
+      <button v-if="shortUrl" class="btn btn-lg btn-secondary btn-block" v-on:click.prevent="onClear">
+        Clear
+      </button>
+    
+      <div v-if="error" class="alert alert-danger" role="alert" style="margin-top: 20px">
+        {{ error }}
+      </div>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script type="text/javascript">
+      var app = new Vue({
+        el: '#app',
+        data: {
+          error: null,
+          url: '',
+          shortUrl: null,
+          isGenerating: false,
+          copyText: 'Copy'
+        },
+        methods: {
+          onClear: function() {
+            this.url = '';
+            this.shortUrl = null;
+            this.copyText = 'Copy';
+          },
+          onCopy: function() {
+            const el = document.createElement('textarea');
+            el.value = this.shortUrl;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            this.copyText = 'Copied!';
+          },
+          onGenerate: function() {
+            this.error = null;
+            this.isGenerating = true;
+
+            const vm = this;
+
+            fetch('/add', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: 'url=' + this.url
+            })
+            .then(function(response) {
+              response.json().then(function(json) {
+                Vue.nextTick(function() {
+                  if (response.status == 422) {
+                    vm.error = 'URL ' + json.errors.url[0];
+                  } else if (response.status == 200) {
+                    vm.shortUrl = json.link.short_url;
+                  }
+
+                  vm.isGenerating = false;
+                });
+              });
+            });
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

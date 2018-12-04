@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  root 'landing_page#index'
+
   post '/add', to: 'short_url#add'
 
   # TODO: don't hardcode the length of short url
