@@ -1,28 +1,40 @@
 class ShortUrlController < ApplicationController
   def add
-    short_url = ShortUrl.generate(params[:url])
-    short_url.valid?
+    # Search if url has been submitted before.
+    # If yes, no need to generate a new short url.
+    short_url = ShortUrl.find_by value: params[:url]
 
-    response = {}
-    status = :ok
-    errors = {}
+    if short_url.nil?
+      short_url = ShortUrl.generate(params[:url])
+      short_url.valid?
 
-    if !short_url.valid?
-      # Rename value to url
-      errors[:url] = short_url.errors[:value]
+      status = :ok
+      errors = {}
 
-      response = {
-        errors: errors
-      }
+      if !short_url.valid?
+        # Rename value to url
+        errors[:url] = short_url.errors[:value]
 
-      status = :unprocessable_entity
+        response = { errors: errors }
+        status = :unprocessable_entity
+      else
+        short_url.save!
+
+        response = {
+          link: {
+            url: short_url.value,
+            short_url: short_url.short_url(Rails.configuration.app_url)
+          },
+          errors: errors
+        }
+      end
     else
       response = {
         link: {
           url: short_url.value,
           short_url: short_url.short_url(Rails.configuration.app_url)
         },
-        errors: errors
+        errors: {}
       }
     end
 

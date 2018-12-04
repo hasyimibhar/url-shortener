@@ -13,6 +13,19 @@ RSpec.describe 'Short URL API', type: :request do
       end
     end
 
+    context 'when the same url is posted twice' do
+      before {
+        post '/add', params: { url: 'https://someurl.com' }
+        @short_url = json['link']['short_url']
+      }
+
+      it "shouldn't create new short url" do
+        post '/add', params: { url: 'https://someurl.com' }
+        expect(response).to have_http_status(200)
+        expect(json['link']['short_url']).to eq(@short_url)
+      end
+    end
+
     context 'when the url is invalid' do
       before { post '/add', params: { url: 'foobar' } }
 
