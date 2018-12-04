@@ -51,7 +51,7 @@ RSpec.describe 'Short URL API', type: :request do
     end
 
     context 'when the url is invalid' do
-      it 'redirects to url' do
+      it 'returns 404' do
         get '/F7aBh4'
         expect(response).to have_http_status(404)
       end
